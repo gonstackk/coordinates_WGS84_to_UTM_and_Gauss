@@ -106,6 +106,7 @@ int main()
     QVector <double> vecIn;
     QString str;
     int N = 0;
+    int flag = 0;
 
     QFile inputFile("/home/anastasia/C++/test/Coordinaty/coor_2.txt");
     if (inputFile.open(QIODevice::ReadOnly))
@@ -113,6 +114,7 @@ int main()
         str = inputFile.readLine();
         while (!inputFile.atEnd())
         {
+           bool ok;
            QString line = inputFile.readLine();
            QStringList row = line.split("\t");
 
@@ -120,7 +122,12 @@ int main()
 
            for(int i = 0; i< row.size(); i++)
            {
-                    values[i] = row[i].toDouble();
+                    values[i] = row[i].toDouble(&ok);
+                    if (ok == false)
+                    {
+                        std::cout << "исправьте ошибку в сроке №" << N / 2 + 2 << std::endl;
+                        flag = 1;
+                    }
                     vecIn.push_back(values[i]);
                     N++;
            }
@@ -128,16 +135,19 @@ int main()
         }
         inputFile.close();
     }
-
-    for (int i =0; i < N; i += 2 )
+    if (flag == 0)
     {
-        vec_x_y_WGS = WGS_to_UTM(vecIn[i], vecIn[i + 1]);
-        std::cout << "x = " << vec_x_y_WGS [0] <<  " м; " << "y = " << vec_x_y_WGS [1] <<  " м;" << std::endl;
-    }
-    //vec_x_y_WGS = WGS_to_UTM(longitude, latitude);
-    //std::cout << "x =  " << vec_x_y_WGS [0] <<  " м; " << "y =  " << vec_x_y_WGS [1] <<  " м; " << std::endl;
+        for (int i =0; i < N; i += 2 )
+        {
+            vec_x_y_WGS = WGS_to_UTM(vecIn[i], vecIn[i + 1]);
+            std::cout << "x = " << vec_x_y_WGS [0] <<  " м; " << "y = " << vec_x_y_WGS [1] <<  " м;" << std::endl;
+        }
 
-    //vec_x_y_GK = WGS_to_GK(longitude,latitude);
-    //std::cout << "x = " << vec_x_y_GK [0] <<  " м; " << "y = " << vec_x_y_GK [1] <<  " м; " << std::endl;
+        //vec_x_y_WGS = WGS_to_UTM(longitude, latitude);
+        //std::cout << "x =  " << vec_x_y_WGS [0] <<  " м; " << "y =  " << vec_x_y_WGS [1] <<  " м; " << std::endl;
+
+        //vec_x_y_GK = WGS_to_GK(longitude,latitude);
+        //std::cout << "x = " << vec_x_y_GK [0] <<  " м; " << "y = " << vec_x_y_GK [1] <<  " м; " << std::endl;
+    }
     return 0;
 }
